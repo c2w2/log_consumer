@@ -17,6 +17,8 @@ import kafka.message.MessageAndMetadata;
 import kafka.producer.KeyedMessage;
 import kafka.producer.ProducerConfig;
 import java.time.*;;
+
+
 public class log_consumer {
 	 private static final int NUM_THREADS = 1;
 	 private static Calendar date;
@@ -25,37 +27,32 @@ public class log_consumer {
 	  static String topic = "tail";
 	  
 	 static boolean calcTime() {
-	     if(date.getTime().getTime()-time>MAX_ALLOWED) {//variable time holds the last time it saved. get time will get the current time and will check if its above or below the threshhold
+	     if(date.getTime().getTime()-time>MAX_ALLOWED) {
 	         return true;
 	     } else {
 	         return false;
 	     }
 	 }
 	 
-	 static boolean checkTime() {//main method that will be called for all movements
-	    
-		 if(isTiming) {//will check if it has already started timing
-	     boolean aboveThreshold=calcTime();//will then call a method that will return true or false dpending on how long the user took
-	    
+	 static boolean checkTime() {
+		 
+		 if(isTiming) {
+	     boolean aboveThreshold=calcTime();
 
-	    if(aboveThreshold) {//if he took too long
-	     //here the user will be prompted why he hasnt been working for the time or whatever
-	     //시간이 넘으면
+	    if(aboveThreshold) {
 	    	return false;
 	    } else {
-	     //do nothing it was within the time limit
-	    // 시간이 넘지 않으면 
 	    	return true;
 	    }
 
 
-	 } else {//it wasnt already timing
+	 } else {
 		date =Calendar.getInstance();
 	     time=(int) date.getTime().getTime();
 	     isTiming=true;
 	 }
 		 return false;
-	 }//end of method
+	 }
 	
 	 
 	 public static void main(String[] args) throws Exception {
@@ -77,10 +74,24 @@ public class log_consumer {
 	        checkTime();
 	        if(checkTime())
 	        {
-	        	final KafkaStream<byte[], byte[]> stream = streams.get(k);//?
-	        	MessageAndMetadata<byte[], byte[]> messageAndMetadata = null;//?
-	        	String tmp = new String(messageAndMetadata.message());
-	        	
+	        	for (final KafkaStream<byte[], byte[]> stream : streams) { 
+	        		executor.execute(new Runnable() { 
+	        	        
+	        	       			public synchronized void run() { 
+	        	      				for (MessageAndMetadata<byte[], byte[]> messageAndMetadata : stream) { 
+	        	      					String tmp = new String(messageAndMetadata.message()); 
+	        	        					 
+	        	       			 
+	        	       					 
+	        	       					
+	        	        					 
+	        	      				} 
+	        	        				
+	        	     
+	        	       			}
+	        	       			});
+	        	        	}
+   	
 	        	
 	        }else
 	        {
